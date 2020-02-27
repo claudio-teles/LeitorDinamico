@@ -143,7 +143,7 @@ public class LeitorDinamico extends JFrame {
 									Thread.sleep(slider.getValue());
 									lblTexto.setText(palavras.get(i));
 									if (pausado == true) {// Se não tiver pausado, então pause.
-										iterando = false;
+										iterando = false;//
 										break;
 									}
 								}
