@@ -25,6 +25,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.Toolkit;
+import javax.swing.JRadioButton;
 
 public class LeitorDinamico extends JFrame {
 
@@ -41,6 +42,8 @@ public class LeitorDinamico extends JFrame {
 	private JSlider slider;
 	private JButton btnPausar;
 	private JButton btnIniciar;
+	protected boolean selecionado = false;
+	private JRadioButton rdbtnInfinito;
 
 	/**
 	 * Launch the application.
@@ -66,6 +69,38 @@ public class LeitorDinamico extends JFrame {
 	
 	public List<String> listePalavrasSeparadas(String texto) {
 		return Arrays.asList(texto.split(" "));
+	}
+	
+	private void crieSemiFrases(List<String> palavras) throws InterruptedException {
+		int proximoIndice = 0;
+		for (int i = proximoIndice; i < palavras.size(); i++) {
+			if (Math.abs(palavras.size() - i) >= 2) {// Se tiver pelo menos 2 itens após este item, então execute o código.
+				if (pausado == true) {// Se não tiver pausado, então pause.
+					break;
+				}
+				String semiFrase = palavras.get(i) + " " + palavras.get(i + 1) + " " + palavras.get(i + 2);
+				proximoIndice = (i + 3);
+				Thread.sleep(slider.getValue());
+				lblTexto.setText(semiFrase);
+			}
+			if (Math.abs(palavras.size() - i) == 1) {// Se tiver pelo menos 1 item após este item, então execute o código.
+				if (pausado == true) {// Se não tiver pausado, então pause.
+					break;
+				}
+				String semiFrase = palavras.get(i) + " " + palavras.get(i + 1);
+				proximoIndice = (i + 2);
+				Thread.sleep(slider.getValue());
+				lblTexto.setText(semiFrase);
+			}
+			if (Math.abs(palavras.size() - i) == 0) {// Se não tiver mais itens após este item, então execute o código.
+				if (pausado == true) {// Se não tiver pausado, então pause.
+					break;
+				}
+				proximoIndice = (i + 1);
+				Thread.sleep(slider.getValue());
+				lblTexto.setText(palavras.get(i) + " ");
+			}
+		}
 	}
 
 	/**
@@ -99,33 +134,19 @@ public class LeitorDinamico extends JFrame {
 						LeitorDinamico leitor = new LeitorDinamico();
 						List<String> palavras = new ArrayList<>();
 						palavras.addAll(leitor.listePalavrasSeparadas(txtpnContedo.getText()));
-						int proximoIndice = 0;
-						for (int i = proximoIndice; i < palavras.size(); i++) {
-							if (Math.abs(palavras.size() - i) >= 2) {// Se tiver pelo menos 2 itens após este item, então execute o código.
-								if (pausado == true) {// Se não tiver pausado, então pause.
-									break;
+						if (!selecionado) {
+							crieSemiFrases(palavras);
+						} else {
+							boolean iterando = true;
+							while (iterando) {
+								for (int i = 0; i < palavras.size(); i++) {
+									Thread.sleep(slider.getValue());
+									lblTexto.setText(palavras.get(i));
+									if (pausado == true) {// Se não tiver pausado, então pause.
+										iterando = false;
+										break;
+									}
 								}
-								String semiFrase = palavras.get(i)+" "+palavras.get(i + 1)+" "+palavras.get(i + 2);
-								proximoIndice = (i + 3);
-								Thread.sleep(slider.getValue());
-								lblTexto.setText(semiFrase);
-							}
-							if (Math.abs(palavras.size() - i) == 1) {// Se tiver pelo menos 1 item após este item, então execute o código.
-								if (pausado == true) {// Se não tiver pausado, então pause.
-									break;
-								}
-								String semiFrase = palavras.get(i)+" "+palavras.get(i + 1);
-								proximoIndice = (i + 2);
-								Thread.sleep(slider.getValue());
-								lblTexto.setText(semiFrase);
-							}
-							if (Math.abs(palavras.size() - i) == 0) {// Se não tiver mais itens após este item, então execute o código.
-								if (pausado == true) {// Se não tiver pausado, então pause.
-									break;
-								}
-								proximoIndice = (i + 1);
-								Thread.sleep(slider.getValue());
-								lblTexto.setText(palavras.get(i)+" ");
 							}
 						}
 						return null;
@@ -177,6 +198,19 @@ public class LeitorDinamico extends JFrame {
 		lblVelocidadeDeLeitura.setForeground(new Color(0, 128, 128));
 		lblVelocidadeDeLeitura.setFont(new Font("DejaVu Sans", Font.PLAIN, 18));
 		scrollPane.setColumnHeaderView(lblVelocidadeDeLeitura);
+		
+		rdbtnInfinito = new JRadioButton("Infinito");
+		rdbtnInfinito.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rdbtnInfinito.isSelected()) {
+					selecionado  = true;
+				} else {
+					selecionado = false;
+				}
+			}
+		});
+		rdbtnInfinito.setForeground(new Color(0, 0, 255));
+		contentPane.add(rdbtnInfinito, BorderLayout.WEST);
 	}
 
 }
