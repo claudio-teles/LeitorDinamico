@@ -188,8 +188,13 @@ public class LeitorDinamico extends JFrame {
 		slider.setOrientation(SwingConstants.VERTICAL);
 		slider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				long quantidadeDePalavrasPorMinuto = (( ((long) 100000 / (long) slider.getValue())) - 171 );
-				lblVelocidadeDeLeitura.setText("Quantidade de palavras por minuto: "+String.valueOf(quantidadeDePalavrasPorMinuto)+".");
+				if (!rdbtnInfinito.isSelected()) {
+					long quantidadeDePalavrasPorMinuto = ( ( ( 100000 /  slider.getValue()  ) - 171 ) );
+					lblVelocidadeDeLeitura.setText(String.valueOf(quantidadeDePalavrasPorMinuto) + " palavras por minuto.");
+				} else {
+					long quantidadeDePalavrasPorMinuto = ( ( ( ( 100000 / slider.getValue()) - 171 ) / 3 ) + 2 );
+					lblVelocidadeDeLeitura.setText(String.valueOf(quantidadeDePalavrasPorMinuto) + " palavras por minuto.");
+				}
 			}
 		});
 		scrollPane.setRowHeaderView(slider);
